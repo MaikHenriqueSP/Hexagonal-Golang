@@ -1,7 +1,5 @@
 :construction: This is a working in progress :construction:
 
-:art:
-
 ### Business Rules
 This implementation aims to simulate a library.
 
