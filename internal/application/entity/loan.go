@@ -18,27 +18,26 @@ type Loan struct {
 
 const BaseReturnDate int = 15
 
-func NewLoan(user *User, book *Book, clock clock.Clock) (loan *Loan) {
-	loanDate := clock.Now()
+func NewLoan(u *User, b *Book, c clock.Clock) (loan *Loan) {
+	loanDate := c.Now()
 	returnDate := loanDate.AddDate(0, 0, BaseReturnDate)
-	return &Loan{user, book, loanDate, returnDate, enum.Loaned, clock}
+	return &Loan{u, b, loanDate, returnDate, enum.Loaned, c}
 }
 
-func (p *Loan) FinishLoan() enum.LoanStatus {
+func (p *Loan) FinishLoan() {
 	if p.status != enum.Loaned {
-		return p.status
+		return
 	}
 	
 	if p.isLateToReturn() {
 		p.status = enum.LateToReturn
-		return enum.LateToReturn
+		return
 	}
 	
-	p.status = enum.Returned
-	return enum.Returned
+	p.status = enum.Returned	
 }
 
-func (p *Loan) isLateToReturn() bool {
+func (p *Loan) isLateToReturn() (r bool) {
 	expectedReturnDate := p.returnDate.AddDate(0, 0, BaseReturnDate)
 	return p.clock.Now().AddDate(0, 0, 1).After(expectedReturnDate)
 }

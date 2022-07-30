@@ -5,6 +5,6 @@ type User struct {
 	fullName string
 }
 
-func NewUser(email, fullName string) *User {
+func NewUser(email, fullName string) (u *User) {
 	return &User{email: email, fullName: fullName}
 }

@@ -27,12 +27,11 @@ func TestLoan(t *testing.T) {
 
 	t.Run("Return book", func(t *testing.T) {
 		loan := defaultLoan(mockClock)
-		actualStatus := loan.FinishLoan()
 		expectedStatus := enum.Returned
+		loan.FinishLoan()
+		actualStatus := loan.status
 		assert.Equal(t, expectedStatus, actualStatus)
 	})
-
-
 }
 
 
