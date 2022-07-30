@@ -5,6 +5,7 @@ import (
 
 	"github.com/benbjohnson/clock"
 	"github.com/golang-hexagonal-architecture/internal/application/entity/enum"
+	timeUtil "github.com/golang-hexagonal-architecture/pkg/time"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -24,7 +25,6 @@ func TestLoan(t *testing.T) {
 		assert.Equal(t, expectedStatus, loan.status)
 	})
 
-
 	t.Run("Return book", func(t *testing.T) {
 		loan := defaultLoan(mockClock)
 		expectedStatus := enum.Returned
@@ -32,6 +32,44 @@ func TestLoan(t *testing.T) {
 		actualStatus := loan.status
 		assert.Equal(t, expectedStatus, actualStatus)
 	})
+
+	t.Run("Extend loan", func(t *testing.T) {
+		loan := defaultLoan(mockClock)
+		expectedReturnDate := loan.returnDate.AddDate(0, 0, LoanExtensionDays)
+		
+		loan.ExtendLoan()
+
+		actualReturnDate := loan.returnDate
+
+		assert.Equal(t, expectedReturnDate, actualReturnDate)
+	})
+
+	t.Run("Cannot extend loan if status is different loaned", func(t *testing.T) {
+		loan := defaultLoan(mockClock)
+		expectedReturnDate := loan.returnDate
+		loan.status = enum.Returned
+		
+		loan.ExtendLoan()
+
+		actualReturnDate := loan.returnDate
+
+		assert.Equal(t, expectedReturnDate, actualReturnDate)
+	})
+
+	t.Run("Cannot extend loan if it was already extended three times", func(t *testing.T) {
+		loan := defaultLoan(mockClock)
+		expectedReturnDate := timeUtil.AddDays(loan.returnDate, LoanExtensionDays * 3)		
+		
+		loan.ExtendLoan()
+		loan.ExtendLoan()
+		loan.ExtendLoan()
+		loan.ExtendLoan()
+
+		actualReturnDate := loan.returnDate
+
+		assert.Equal(t, expectedReturnDate, actualReturnDate)
+	})
+
 }
 
 
